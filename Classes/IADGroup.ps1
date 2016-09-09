@@ -58,6 +58,8 @@ IADGroup([Hashtable]$parameters)
         switch ($member.objectClass) {
             
             'group' {
+                $property = Get-ADGroup -Identity $member.DistinguishedName -Server $Domain
+                [ADGroupMember]::New($property.distinguishedName,$property.name,$property.objectclass,$property.objectguid,$property.samaccountname,$property.sid)                    
                 $this.NestedMembers($member.DistinguishedName,$Domain)
             }
 
@@ -98,6 +100,8 @@ IADGroup([Hashtable]$parameters)
         switch ($member.objectClass) {
             
             'group' {
+                $property = Get-ADGroup -Identity $member.DistinguishedName -Server $Domain
+                [ADGroupMember]::New($property.distinguishedName,$property.name,$property.objectclass,$property.objectguid,$property.samaccountname,$property.sid)                
                 $this.NestedMembers($member.DistinguishedName,$Domain)
             }
 
