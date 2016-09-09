@@ -1,5 +1,12 @@
 function Get-IADGroupMember
 {
+<#
+.SYNOPSIS
+.DESCRIPTION
+.PARAMETER Identity
+.EXAMPLE
+.EXAMPLE
+#>       
     [CmdletBinding()]
     [Alias()]
     Param
