@@ -19,4 +19,4 @@ techniques.
 4. Rename ImprovedActiveDirectory-master to ImprovedActiveDirectory
 5. Copy ImprovedActiveDirectory to *C:\Program Files\WindowsPowerShell\Modules*
 6. Open PowerShell
-7. Issue *Import-Module ImprovedActiveDirectory*
+7. *Import-Module ImprovedActiveDirectory*
