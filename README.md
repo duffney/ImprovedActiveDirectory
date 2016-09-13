@@ -1,4 +1,4 @@
-![improvedactivedirectory](http://i.imgur.com/WbVloeK.png "improvedactivedirectory")
+![improvedactivedirectory](http://i.imgur.com/MFNQkoG.png "improvedactivedirectory")
 
 ## Introduction
 ImprovedActiveDirectory is a PowerShell module that builds on and expands upon the ActiveDirectory module used for interacting with ActiveDirectory domains and forests.
