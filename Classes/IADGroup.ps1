@@ -157,7 +157,7 @@ IADGroup([Hashtable]$parameters)
 
                      }
                     'user' {
-                        $property = Get-ADUser -Identity $Member -Server $ObjectDomain | select distinguishedName,name,objectClass,objectGuid,samaccountname,SID
+                        $property = Get-ADUser -Identity $Member -Server $ObjectDomain -Properties mail,manager | select distinguishedName,name,objectClass,objectGuid,samaccountname,SID
                         [ADGroupMember]::New($property.distinguishedName,$property.name,$property.objectclass,$property.objectguid,$property.samaccountname,$property.sid)
                         
                      }
@@ -202,7 +202,7 @@ IADGroup([Hashtable]$parameters)
 
                      }
                     'user' {
-                        $property = Get-ADUser -Identity $Member -Server $ObjectDomain | select distinguishedName,name,objectClass,objectGuid,samaccountname,SID
+                        $property = Get-ADUser -Identity $Member -Server $ObjectDomain -Properties mail,manager | select distinguishedName,name,objectClass,objectGuid,samaccountname,SID
                         [ADGroupMember]::New($property.distinguishedName,$property.name,$property.objectclass,$property.objectguid,$property.samaccountname,$property.sid)
                         
                      }
