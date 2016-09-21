@@ -13,7 +13,11 @@ Describe 'ConvertTo-IADDomain Tests' {
         "$PSScriptRoot\..\ImprovedActiveDirectory.psm1" | should exist
     }
 
-    It 'contains domain name' {
-        ConvertTo-IADDomain -distinguishedname 'CN=Administrator,CN=Users,DC=wef,DC=com' | should match '[a-z]+\.[a-z]+\.[a-z]+|[a-z]+\.[a-z]+'
+    It 'outputs valid domain name' {
+        ConvertTo-IADDomain -distinguishedname 'CN=Administrator,CN=Users,DC=wef,DC=com','CN=Administrator,CN=Users,DC=wef,DC=com' | should match '[a-z]+\.[a-z]+\.[a-z]+|[a-z]+\.[a-z]+'
+    }
+
+    It 'reject invalid distinguishedname' {
+        ConvertTo-IADDomain -distinguishedname 'CN=Administrator,CN=Users,DC=wefasdfasdfasdfadsfasdfasdf,DC=com' | should throw
     }
 }
