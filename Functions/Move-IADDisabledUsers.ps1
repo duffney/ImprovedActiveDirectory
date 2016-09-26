@@ -9,7 +9,7 @@
 .PARAMETER Credential
     Specifies the credentials used to move the objects. Functions the same way as Active Directory cmdlets (PSCredential). 
 .PARAMETER DisabledOUPath
-    Specifies the target organizational unti to move the objects to. This parameter accepts the distinguishedname of the OU as a string.
+    Specifies the target organizational unit to move the objects to. This parameter accepts the distinguishedname of the OU as a string.
 .PARAMETER ExclusionList
     Specify which accounts if any need to be excluded from the move. If you have disabled system or service accounts for example that must remain in their current OU this will exclude them. The parameter accepts a string array of samaccountnames. 
 .PARAMETER WhatIf
