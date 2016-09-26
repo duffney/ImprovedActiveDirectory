@@ -11,8 +11,10 @@ catch [System.Management.Automation.ParameterBindingException] {
 . $PSScriptRoot\Functions\Disable-ADComputer.ps1
 . $PSScriptRoot\Functions\Disable-ADUser.ps1
 . $PSScriptRoot\Functions\ConvertTo-IADDomain.ps1
+. $PSScriptRoot\Functions\Move-IADDisabledUsers.ps1
 
 Export-ModuleMember ConvertTo-IADDomain
 Export-ModuleMember Get-IADGroupMember
 Export-ModuleMember Disable-ADComputer
 Export-ModuleMember Disable-ADUser
+Export-ModuleMember Move-IADDisabledUsers
