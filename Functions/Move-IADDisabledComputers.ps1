@@ -49,7 +49,7 @@
 
            Catch{
                 $A = [pscustomobject]@{"Computer"=$Computer.dnshostname;
-                                       "Status"="Failure"
+                                       "Status"="Failure";
                                        "Error"=$Error[0]}
            }
 

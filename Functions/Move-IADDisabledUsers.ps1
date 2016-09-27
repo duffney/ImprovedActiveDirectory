@@ -57,7 +57,7 @@
 
            Catch{
                 $A = [pscustomobject]@{"User"=$User.samaccountname;
-                                       "Status"="Failure"
+                                       "Status"="Failure";
                                        "Error"=$Error[0]}
            }
 
