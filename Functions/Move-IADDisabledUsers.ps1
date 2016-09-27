@@ -8,7 +8,7 @@
     Specifies the Active Directory Domain Services instance to connect to.
 .PARAMETER Credential
     Specifies the credentials used to move the objects. Functions the same way as Active Directory cmdlets (PSCredential). 
-.PARAMETER DisabledOUPath
+.PARAMETER DisabledOU
     Specifies the target organizational unit to move the objects to. This parameter accepts the distinguishedname of the OU as a string.
 .PARAMETER ExclusionList
     Specify which accounts if any need to be excluded from the move. If you have disabled system or service accounts for example that must remain in their current OU this will exclude them. The parameter accepts a string array of samaccountnames. 
@@ -17,11 +17,11 @@
 .PARAMETER Confirm
     Supports the SwitchParameter Confirm. If specified the function will ask for confirmation before moving each account. If you do not specify -Confirm it will move the objects without asking.
 .EXAMPLE
-    Move-IADDisabledUsers -Server fabrikom.com -Credential (get-credential) -DisabledOUPath "OU=Disabled,DC=fabrikom,DC=com" -ExclusionList test1,test2,test3 -Confirm
+    Move-IADDisabledUsers -Server fabrikom.com -Credential (get-credential) -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -ExclusionList test1,test2,test3 -Confirm
 
     Queries the fabrikom.com domain after prompting for credentials to use. Will ask for confirmation before moving to the Disabled OU specified and excludes user accounts test1, test2, and test3.
 .EXAMPLE
-    Move-IADDisabledUsers -Credential $Creds -DisabledOUPath "OU=Disabled,DC=fabrikom,DC=com" -WhatIf
+    Move-IADDisabledUsers -Credential $Creds -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -WhatIf
 
     Queries the currently joined domain using credentials stored inside the $Creds PSCredential object and returns what will happen, but does not take action (-WhatIf).    
 #>       
@@ -29,7 +29,7 @@
     param([string]$Server,
           [System.Management.Automation.PSCredential]$Credential,
           [Parameter(Mandatory=$true)]
-          [string]$DisabledOUPath,
+          [string]$DisabledOU,
           [string[]]$ExclusionList,
           [switch]$Confirm,
           [switch]$WhatIf)
@@ -41,16 +41,16 @@
     foreach($Account in $ExclusionList){$FilterExclusionList += "-and samaccountname -notlike `"$Account`""}
     $FilterString = "enabled -eq `$false -and samaccountname -notlike `"krbtgt`" -and samaccountname -notlike `"Guest`" -and samaccountname -notlike `"DefaultAccount`" $FilterExclusionList" 
     
-    #Gather the user objects that are disabled and not inside the $DisabledOUPath or $ExclusionList
-    $DisabledUsers = Get-ADUser -Server $Server -Filter $FilterString | Where-Object {$_.distinguishedname -notlike "*$DisabledOUPath*"}
+    #Gather the user objects that are disabled and not inside the $DisabledOU or $ExclusionList
+    $DisabledUsers = Get-ADUser -Server $Server -Filter $FilterString | Where-Object {$_.distinguishedname -notlike "*$DisabledOU*"}
 
 
-    #Move each user account to the $DisabledOUPath
+    #Move each user account to the $DisabledOU
     if($DisabledUsers){
         foreach($User in $DisabledUsers){
 
            Try{ 
-                Move-ADObject -Server $Server -Identity $User -TargetPath $DisabledOUPath -Credential $Credential -Confirm:$Confirm -Whatif:$WhatIf -Verbose
+                Move-ADObject -Server $Server -Identity $User -TargetPath $DisabledOU -Credential $Credential -Confirm:$Confirm -Whatif:$WhatIf -Verbose
                 $A = [pscustomobject]@{"User"=$User.samaccountname;
                                        "Status"="Successful"}
            }
