@@ -28,21 +28,62 @@
           [System.Management.Automation.PSCredential]$Credential,
           [Parameter(Mandatory=$true)]
           [string]$DisabledOU,
+          [Parameter(Mandatory=$true)]
           [int]$DaysInactive,
           [string[]]$ExclusionList,
+          [switch]$IncludeServers,
+          [switch]$IncludeAll,
           [switch]$Confirm,
           [switch]$WhatIf)
 
     $ReturnList = @()
     $FilterExclusionList = ""
+
+    #Grab current date for description and set the $DaysInactive as [datetime] data type for use with lastlogontimestamp
     $CurrentDate = Get-Date
+    $InactiveDate = ((Get-Date).AddDays(-$DaysInactive))
+
 
     #Build the $FilterString from the $ExclusionList
-    foreach($Account in $ExclusionList){$FilterExclusionList += "-and name -notlike `"$Account`""}
-    $FilterString = "lastlogontimestamp -gt $time $FilterExclusionList" 
+    $FirstPass = "1"
+    foreach($Account in $ExclusionList){
+        if($FirstPass -like "1"){$FilterExclusionList += "name -notlike `"$Account`""}
+        else{$FilterExclusionList += " -and name -notlike `"$Account`""}
+        $FirstPass = "0"
+    }
+    $FilterString = "$FilterExclusionList"
 
     #Gather the inactive computer accounts
-    $InactiveComputers = Get-ADComputer -Server $Server -Filter $FilterString -Properties lastlogontimestamp,description
+    if($IncludeServers -and $IncludeAll){throw "You may only specify one: -IncludeServers, -IncludeAll, or default behavior"}
+
+    if($IncludeAll){
+        if($FilterString){$InactiveComputers = Get-ADComputer -Server $Server -Filter $FilterString -Properties lastlogontimestamp,description,operatingsystem `
+        | Where-Object {$_.lastlogontimestamp -lt $($InactiveDate.ToFileTime()) -and $_.enabled -eq $true}} 
+
+        else{$InactiveComputers = Get-ADComputer -Server $Server -Filter{lastlogontimestamp -lt $InactiveDate -and enabled -eq $true} -Properties lastlogontimestamp,description,operatingsystem}
+    }
+
+    if($IncludeServers){
+        if($FilterString){$InactiveComputers = Get-ADComputer -Server $Server -Filter $FilterString -Properties lastlogontimestamp,description,operatingsystem `
+        | Where-Object {$_.lastlogontimestamp -lt $($InactiveDate.ToFileTime())} -and $_.operatingsystem -like "Windows Server*" -and $_.enabled -eq $true} 
+
+        else{$InactiveComputers = Get-ADComputer -Server $Server -Filter{lastlogontimestamp -lt $InactiveDate -and operatingsystem -like "Windows Server*" -and enabled -eq $true} `
+        -Properties lastlogontimestamp,description,operatingsystem}
+    }
+
+    else{
+        if($FilterString){
+            $InactiveComputers = Get-ADComputer -Server $Server -Filter $FilterString -Properties lastlogontimestamp,description,operatingsystem `
+            | Where-Object {$_.lastlogontimestamp -lt $($InactiveDate.ToFileTime()) -and $_.enabled -eq $true -and ($_.operatingsystem -like "Windows 7*" `
+            -or $_.operatingsystem -like "Windows 8*" -or $_.operatingsystem -like "Windows XP*" -or $_.operatingsystem -like "Windows 10*")}
+        }
+
+        else{
+            $InactiveComputers = Get-ADComputer -Server $Server -Filter{lastlogontimestamp -lt $InactiveDate} -Properties lastlogontimestamp,description,operatingsystem `
+            | Where-Object {$_.enabled -eq $true -and ($_.operatingsystem -like "Windows 7*" -or $_.operatingsystem -like "Windows 8*" `
+            -or $_.operatingsystem -like "Windows XP*" -or $_.operatingsystem -like "Windows 10*")}
+        }
+    }
 
     #Disable, set, and move each computer account to the specified $DisabledOU
     if($InactiveComputers){  
@@ -56,14 +97,16 @@
 
                 $A = [pscustomobject]@{"Computer"=$Computer.dnshostname;
                                        "Status"="Successful";
-                                       "LastLogin"=$Computer.lastlogontimestamp}
+                                       "LastLogin"=$([datetime]::FromFileTime($Computer.Lastlogontimestamp));
+                                       "OS"=$Computer.operatingsystem}
             }
 
             Catch{
                 $A = [pscustomobject]@{"Computer"=$Computer.dnshostname;
                                        "Status"="Failure";
                                        "Error"=$Error[0];
-                                       "LastLogin"=$Computer.lastlogontimestamp}
+                                       "LastLogin"=$([datetime]::FromFileTime($Computer.Lastlogontimestamp));
+                                       "OS"=$Computer.operatingsystem}
             }
 
             $ReturnList += $A 
@@ -75,3 +118,4 @@
 
     return $ReturnList
 }
+
