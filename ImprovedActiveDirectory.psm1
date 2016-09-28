@@ -8,8 +8,8 @@ catch [System.Management.Automation.ParameterBindingException] {
 
 . $PSScriptRoot\Classes\IADGroup.ps1
 . $PSScriptRoot\Functions\Get-IADGroupMember.ps1
-. $PSScriptRoot\Functions\Disable-ADComputer.ps1
-. $PSScriptRoot\Functions\Disable-ADUser.ps1
+. $PSScriptRoot\Functions\Disable-IADComputer.ps1
+. $PSScriptRoot\Functions\Disable-IADUser.ps1
 . $PSScriptRoot\Functions\ConvertTo-IADDomain.ps1
 . $PSScriptRoot\Functions\Move-IADDisabledUsers.ps1
 . $PSScriptRoot\Functions\Move-IADDisabledComputers.ps1
