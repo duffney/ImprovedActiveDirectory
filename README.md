@@ -20,3 +20,21 @@ techniques.
 5. Copy ImprovedActiveDirectory to *C:\Program Files\WindowsPowerShell\Modules*
 6. Open PowerShell
 7. *Import-Module ImprovedActiveDirectory*
+
+### Cmdlets
+
+- Get-IADGroupMember
+- Disable-IADComputer
+- Disable-IADUser
+- ConvertTo-IADDomain
+- Move-IADDisabledUsers
+- Move-IADDisabledComputers
+- Empty-IADComputersContainer
+- Disable-IADInactiveComputers
+
+### Contributors
+
+[Josh Duffney](https://github.com/Duffney)
+[Nathan Foreman](https://github.com/foremann)
+
+
