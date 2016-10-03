@@ -35,6 +35,7 @@ techniques.
 ### Contributors
 
 [Josh Duffney](https://github.com/Duffney)
+
 [Nathan Foreman](https://github.com/foremann)
 
 
