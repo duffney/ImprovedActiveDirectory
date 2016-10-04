@@ -3,7 +3,7 @@
 .SYNOPSIS
     Disables all inactive user accounts found inside a domain to the specified OU for disabled users. 
 .DESCRIPTION
-    Disable-IADInactiveUsers queries the specified domain, gathers all inactive user accounts, and moves them to the Active Directory path provided by operator. Inactivity is determined using the lastlogontimestamp of the user. PLEASE NOTE, it is suggesed you first run the cmdlet with -WhatIf so you are aware of any unwanted accounts targeted like service or system accounts. Add any exceptions to the exclusion list and run again using -WhatIf to test they are truly excluded. Suggested application of this function is to use it inside a daily automated task to ensure a more organized Active Directory. 
+    Disable-IADInactiveUsers queries the specified domain, gathers all inactive user accounts, and moves them to the Active Directory path provided by operator. Inactivity is determined using the lastlogontimestamp of the user. By default accounts that have never logged in are excluded, you can use the -IncludeNeverLoggedIn to put in scope. PLEASE NOTE, it is suggesed you first run the cmdlet with -WhatIf so you are aware of any unwanted accounts targeted like service or system accounts. Add any exceptions to the exclusion list and run again using -WhatIf to test they are truly excluded. Suggested application of this function is to use it inside a daily automated task to ensure a more organized Active Directory. 
 .PARAMETER Server
     Specifies the Active Directory Domain Services instance to connect to.
 .PARAMETER Credential
@@ -13,19 +13,21 @@
 .PARAMETER DaysInactive
     Specifies the amount of days of inactivity to target. Accepts an integer for input and checks against the lastlogontimestamp of the user account.
 .PARAMETER ExclusionList
-    Specifies what usernames to exclude from the command. Input the samaccountname property of a user account and it will leave it out of the query. Accepts string array input for multiple usernames. 
+    Specifies what usernames to exclude from the command. Input the samaccountname property of a user account and it will leave it out of the query. Accepts string array input for multiple usernames.
+.PARAMETER IncludeNeverLoggedIn
+    Supports the SwitchParameter IncludeNeverLoggedIn. If specified the function the will disable and move any user accounts that have never logged in (i.e. lastlogontimestamp is "12/31/1600 6:00:00 PM") but are enabled. Not recommended for most environments as this will disable any new accounts created ahead of time for employees that haven't started yet.  
 .PARAMETER WhatIf
     Supports the SwitchParameter WhatIf. If specified the function will return what would happen if it was ran, taking no action. Use this to see what accounts are targeted without actually moving them.
 .PARAMETER Confirm
     Supports the SwitchParameter Confirm. If specified the function will ask for confirmation before moving each account. If you do not specify -Confirm it will move the objects without asking.
 .EXAMPLE
-    Disable-IADInactiveComputers -Server fabrikom.com -Credential (Get-Credential) -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -DaysInactive 90 -WhatIf -IncludeServers
+    Disable-IADInactiveUsers -Server fabrikom.com -Credential (Get-Credential) -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -DaysInactive 90 -WhatIf 
 
-    Queries the fabrikom.com domain after prompting for credentials to use. Includes both desktop and server computer objects that have not logged on for 90 days. Returns what will happen, but does not take action (-WhatIf).  
+    Queries the fabrikom.com domain after prompting for credentials for user accounts that have not logged on for more than 90 days but logged in at least once in the past. Returns what will happen, but does not take action (-WhatIf).  
 .EXAMPLE
-    Disable-IADInactiveComputers -Server fabrikom.com -Credential $Creds -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -DaysInactive 180
+    Disable-IADInactiveUsers -Server fabrikom.com -Credential $Creds -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -DaysInactive 180 -IncludeNeverLoggedIn
 
-    Queries the currently joined domain using credentials stored inside the $Creds PSCredential object. Queries and disables all desktop computers that have not logged on for 180 days.  
+    Queries the currently joined domain using credentials stored inside the $Creds PSCredential object. Queries and disables all user accounts that have not logged on for more than 180 days.  
 #>       
     [CmdletBinding()]
     param([string]$Server,
