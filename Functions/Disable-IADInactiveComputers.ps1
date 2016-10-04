@@ -48,7 +48,7 @@
     $FilterExclusionList = ""
 
     #Grab current date for description and set the $DaysInactive as [datetime] data type for use with lastlogontimestamp
-    $CurrentDate = Get-Date
+    $CurrentDate = Get-Date -UFormat %D
     $InactiveDate = ((Get-Date).AddDays(-$DaysInactive))
 
 
@@ -98,7 +98,7 @@
         foreach($Computer in $InactiveComputers){
 
             Try{
-                $Description = $($Computer.description) + " / " + "Disabled on $CurrentDate due to $Daysinactive inactive"
+                $Description = $($Computer.description) + " / " + "Disabled on $CurrentDate due to $Daysinactive days inactive"
                 Disable-ADAccount -Identity $Computer -Server $Server -Credential $Credential -Confirm:$Confirm -Whatif:$WhatIf -Verbose
                 Set-ADObject -Identity $Computer -Server $Server -Credential $Credential -Description $Description -Confirm:$Confirm -Whatif:$WhatIf -Verbose 
                 Move-ADObject -Identity $Computer -Server $Server -Credential $Credential -TargetPath $DisabledOU -Confirm:$Confirm -Whatif:$WhatIf -Verbose
