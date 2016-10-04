@@ -35,6 +35,7 @@
           [Parameter(Mandatory=$true)]
           [int]$DaysInactive,
           [string[]]$ExclusionList,
+          [switch]$IncludeNeverLoggedIn,
           [switch]$Confirm,
           [switch]$WhatIf)
 
@@ -50,7 +51,17 @@
     $FilterString = "enabled -eq `$true -and samaccountname -notlike `"krbtgt`" -and samaccountname -notlike `"Guest`" -and samaccountname -notlike `"DefaultAccount`" $FilterExclusionList" 
     
     #Gather the user objects that are disabled and not inside the $DisabledOU or $ExclusionList
-    $DisabledUsers = Get-ADUser -Server $Server -Filter $FilterString -Properties lastlogontimestamp,description | Where-Object {$_.lastlogontimestamp -lt $($InactiveDate.ToFileTime())}
+    #Include Users that have never logged in
+    if($IncludeNeverLoggedIn){
+        $DisabledUsers = Get-ADUser -Server $Server -Filter $FilterString -Properties lastlogontimestamp,description | Where-Object {$_.lastlogontimestamp -lt $($InactiveDate.ToFileTime())}
+    }
+
+    #Exclude users that have never logged in
+    else{
+        $NeverLoggedIn = (([DateTime]"12/31/1600 6:00:00 PM").ToFileTime())
+        $DisabledUsers = Get-ADUser -Server $Server -Filter $FilterString -Properties lastlogontimestamp,description | Where-Object {$_.lastlogontimestamp -lt $($InactiveDate.ToFileTime()) -and $_.lastlogontimestamp -gt $NeverLoggedIn}
+    }
+
 
     #Disable, set, and move each user account
     if($DisabledUsers){
@@ -79,9 +90,7 @@
 
     else{$ReturnList = "No users found"}
 
-    Return $ReturnList
+    Return ($ReturnList | sort lastlogin)
 
 }
 
-#Include logic for never logged in but expired ? moloneyl             12/31/1600 6:00:00 PM  Successful
-#maybe if -IncludeNeverLoggedIn check the create or modify date instead. Otherwise by default leave out these accounts
