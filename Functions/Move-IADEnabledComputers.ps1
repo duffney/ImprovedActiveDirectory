@@ -44,7 +44,7 @@
     #Gather the computer objects that are enabled and inside the $DisabledOU
     $EnabledComputers = Get-ADComputer -Server $Server -Filter {enabled -eq $true} -properties operatingsystem,dnshostname | Where-Object {$_.distinguishedname -like "*$DisabledOU*"}
 
-    #Move each computer account to the $DisabledOU
+    #Move each computer account to the $TargetPath
     if($EnabledComputers){
         foreach($Computer in $EnabledComputers){
             
