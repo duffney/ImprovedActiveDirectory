@@ -37,7 +37,7 @@
           [Parameter(Mandatory=$true)]
           [string]$DisabledOU,
           [Parameter(Mandatory=$true)]
-          [int]$DaysInactive,
+          [int]$DaysDisabled,
           [string[]]$ExclusionList,
           [switch]$NoRecycleBin,
           [switch]$Confirm,
@@ -45,11 +45,6 @@
 
     $ReturnList = @()
     $FilterExclusionList = ""
-
-    #Grab current date for description and set the $DaysInactive as [datetime] data type for use with lastlogontimestamp
-    $CurrentDate = Get-Date -UFormat %D
-    $InactiveDate = ((Get-Date).AddDays(-$DaysInactive))
-
 
     #Build the $FilterString from the $ExclusionList
     $FirstPass = "1"
@@ -67,16 +62,8 @@
         Write-Host "Resuming command..." -ForegroundColor Red -BackgroundColor Black
     }
 
-    #Gather the inactive computer accounts
-    if($IncludeServers -and $IncludeAll){throw "You may only specify one option: -IncludeServers, -IncludeAll, or neither for default behavior"}
-
-    if($IncludeAll){
-        if($FilterString){$InactiveComputers = Get-ADComputer -Server $Server -Filter $FilterString -Properties lastlogontimestamp,description,operatingsystem `
-        | Where-Object {$_.lastlogontimestamp -lt $($InactiveDate.ToFileTime()) -and $_.enabled -eq $true}} 
-
-        else{$InactiveComputers = Get-ADComputer -Server $Server -Filter{lastlogontimestamp -lt $InactiveDate -and enabled -eq $true} -Properties lastlogontimestamp,description,operatingsystem}
-    }
-
+    #Gather the disabled accounts
+    $DisabledUsers = Get-ADUser -SearchBase $DisabledOU -Server $Server -Filter $FilterString -Properties description | Where-Object {$_.enabled -eq $false}
    
 
     #Disable, set, and move each computer account to the specified $DisabledOU
@@ -113,3 +100,4 @@
     return $ReturnList 
 }
 
+# [0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]
