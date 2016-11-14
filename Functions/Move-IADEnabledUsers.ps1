@@ -17,11 +17,11 @@
 .PARAMETER Confirm
     Supports the SwitchParameter Confirm. If specified the function will ask for confirmation before moving each account. If you do not specify -Confirm it will move the objects without asking.
 .EXAMPLE
-    Move-IADEnabledUserers -Server fabrikom.com -Credential (get-credential) -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -TargetOU "OU=UserAccounts",DC=fabrikom,DC=com" 
+    Move-IADEnabledUsers -Server fabrikom.com -Credential (get-credential) -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -TargetOU "OU=UserAccounts",DC=fabrikom,DC=com" 
 
     Queries the fabrikom.com domain after prompting for credentials to use. Moves any returned accounts to the respective target OU.
 .EXAMPLE
-    Move-IADEnabledUserers -Server fabrikom.com -Credential (get-credential) -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -TargetOU "OU=UserAccounts",DC=fabrikom,DC=com"  -WhatIf
+    Move-IADEnabledUsers -Server fabrikom.com -Credential (get-credential) -DisabledOU "OU=Disabled,DC=fabrikom,DC=com" -TargetOU "OU=UserAccounts",DC=fabrikom,DC=com"  -WhatIf
 
     Queries the fabrikom.com domain after prompting for credentials to use. Returns what will happen, but does not take action (-WhatIf).    
 #>       
