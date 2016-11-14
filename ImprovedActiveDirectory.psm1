@@ -14,6 +14,7 @@ catch [System.Management.Automation.ParameterBindingException] {
 . $PSScriptRoot\Functions\Move-IADDisabledUsers.ps1
 . $PSScriptRoot\Functions\Move-IADDisabledComputers.ps1
 . $PSScriptRoot\Functions\Move-IADEnabledComputers.ps1
+. $PSScriptRoot\Functions\Move-IADEnabledUsers.ps1
 . $PSScriptRoot\Functions\Empty-IADComputersContainer.ps1
 . $PSScriptRoot\Functions\Disable-IADInactiveComputers.ps1
 
@@ -24,5 +25,6 @@ Export-ModuleMember Disable-ADUser
 Export-ModuleMember Move-IADDisabledUsers
 Export-ModuleMember Move-IADDisabledComputers
 Export-ModuleMember Move-IADEnabledComputers
+Export-ModuleMember Move-IADEnabledUsers
 Export-ModuleMember Empty-IADComputersContainer
 Export-ModuleMember Disable-IADInactiveComputers
