@@ -38,8 +38,8 @@
     $ReturnList = @()
 
     #Build the string for the filter exclusion list
-    foreach($Account in $ExclusionList){$FilterExclusionList += "-and samaccountname -notlike `"$Account`""}
-    $FilterString = "enabled -eq `$false -and samaccountname -notlike `"krbtgt`" -and samaccountname -notlike `"Guest`" -and samaccountname -notlike `"DefaultAccount`" $FilterExclusionList" 
+    foreach($Account in $ExclusionList){$FilterExclusionList += " -and samaccountname -notlike `"$Account`""}
+    $FilterString = "enabled -eq `$false -and samaccountname -notlike `"krbtgt`" -and samaccountname -notlike `"Guest`" -and samaccountname -notlike `"DefaultAccount`"$FilterExclusionList" 
     
     #Gather the user objects that are disabled and not inside the $DisabledOU or $ExclusionList
     $DisabledUsers = Get-ADUser -Server $Server -Filter $FilterString | Where-Object {$_.distinguishedname -notlike "*$DisabledOU*"}
